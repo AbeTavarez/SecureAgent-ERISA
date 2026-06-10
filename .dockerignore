@@ -1,0 +1,20 @@
+.git
+.gitignore
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+.venv
+venv/
+tests/
+data/
+.langfuse/
+
+
+# Others
+desktop.ini
+# Internal documents
+readme-plan.md
+project-structure.md
+overview.md
