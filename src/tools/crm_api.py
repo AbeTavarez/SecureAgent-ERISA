@@ -23,7 +23,7 @@ MOCK_CLIENTS_DB = {
                 policy_id="pol_401k_abc",
                 plan_type="401k",
                 compliance_status="Compliant",
-                last_review_date="2026-01-15",
+                last_review="2026-01-15",
             )
         ],
         compliance_notes=["Initial onboarding compliance review completed."],
