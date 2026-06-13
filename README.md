@@ -87,3 +87,9 @@ class AgentState(TypedDict):
     retrieved_context: List[Dict[str, Any]]
     metadata: Dict[str, Any]
 ```
+
+
+## Resources and Links
+
+**Testing**
+ - https://fastapi.tiangolo.com/tutorial/testing/

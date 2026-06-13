@@ -10,8 +10,7 @@ wheels/
 .venv
 .env
 
+# Others
 desktop.ini
 # Internal documents
-readme-plan.md
-project-structure.md
-overview.md
+docs/internal
