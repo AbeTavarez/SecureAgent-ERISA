@@ -34,7 +34,7 @@ MOCK_CLIENTS_DB = {
 @router.get(
     "/health", status_code=status.HTTP_200_OK, summary="Fetch API health status"
 )
-def get_health_status():
+async def get_health_status():
     return {"status": "ok"}
 
 
@@ -44,7 +44,7 @@ def get_health_status():
     status_code=status.HTTP_200_OK,
     summary="Fetch client profile by Tax ID",
 )
-def get_client_by_tax_id(tax_id: str):
+async def get_client_by_tax_id(tax_id: str):
     """
     Triage step endpoint. Allows the agent to verify client
     existence and fetch active retirement plans.
@@ -68,7 +68,7 @@ def get_client_by_tax_id(tax_id: str):
     status_code=status.HTTP_201_CREATED,
     summary="Append agent compliance notes",
 )
-def add_note_to_profile(payload: ClientNoteRequest):
+async def add_note_to_profile(payload: ClientNoteRequest):
     """
     Action step endpoint. Commits the agent's finalized
     regulatory determination back to the audit trail.
