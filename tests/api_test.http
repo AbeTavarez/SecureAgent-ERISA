@@ -1,0 +1,19 @@
+### CRM API TEST
+
+@baseUrl = http://127.0.0.1:8000/api/v1
+
+### Test app health
+GET {{baseUrl}}/health
+
+### 
+GET {{baseUrl}}/clients?tax_id=95-1234567
+
+
+###
+POST {{baseUrl}}/clients/notes
+Content-Type: application/json
+
+{
+  "client_id": "cli_99011",
+  "note_content": "Test Note." 
+}

@@ -39,7 +39,7 @@ def get_health_status():
 
 
 @router.get(
-    "/clients?tax_id={tax_id}",
+    "/clients",
     response_model=ClientMetadata,
     status_code=status.HTTP_200_OK,
     summary="Fetch client profile by Tax ID",
@@ -51,12 +51,13 @@ def get_client_by_tax_id(tax_id: str):
     """
 
     # Lookup client in mock db
+    print(tax_id)
     client_profile = MOCK_CLIENTS_DB.get(tax_id)
 
     if not client_profile:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            details=f"Client with Tax ID '{tax_id}' not found in CRM database.",
+            detail=f"Client with Tax ID '{tax_id}' not found in CRM database.",
         )
     return client_profile
 
