@@ -1,6 +1,7 @@
 from fastapi import APIRouter, status, HTTPException
 from datetime import datetime
 import uuid
+from langchain.tools import tool
 
 from schemas.api_models import (
     ClientMetadata,
@@ -31,15 +32,19 @@ MOCK_CLIENTS_DB = {
 }
 
 
+@tool
 @router.get(
     "/health", status_code=status.HTTP_200_OK, summary="Fetch API health status"
 )
-async def get_health_status():
+async def get_health_status() -> dict:
+    """Fetch the current health status of the API application.
+    Use this whenever you need to verify if the backend system is up and running.
+    """
     return {"status": "ok"}
 
 
 @router.get(
-    "/clients",
+    "/clients/{tax_id}",
     response_model=ClientMetadata,
     status_code=status.HTTP_200_OK,
     summary="Fetch client profile by Tax ID",
