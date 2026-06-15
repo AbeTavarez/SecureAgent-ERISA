@@ -17,17 +17,15 @@ def test_health():
 # ======= Functional Tests =========
 
 # Verify that client with tax id "95-1234567" exist 
-r = requests.get(f"{API_ENDPOINT}/clients/95-1234567")
-assert r.status_code == 200
+def test_client_exists():
+  response = client.get(f"{API_ENDPOINT}/clients/95-1234567")
+  assert response.status_code == 200
 
 
 # Verify that a "note" will NOT be created without providing client id
-test_note = {
-  # "client_id": "cli_99011",
-  "note_content": "Test Note." 
-}
-r = requests.post(f"{API_ENDPOINT}/clients/notes", json=test_note)
-assert r.status_code == 422
+def test_note_creation():
+  response = client.post(f"{API_ENDPOINT}/clients/notes", json={"note_content": "Test Note."})
+  assert response.status_code == 422
 
 
 print("Test complete.")
