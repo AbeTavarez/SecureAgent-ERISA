@@ -6,7 +6,7 @@
 GET {{baseUrl}}/health
 
 ### 
-GET {{baseUrl}}/clients?tax_id=95-1234567
+GET {{baseUrl}}/clients/95-1234567
 
 
 ###

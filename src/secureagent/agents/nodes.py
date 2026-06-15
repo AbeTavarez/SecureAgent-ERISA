@@ -1,11 +1,11 @@
-from state import AgentState
 from langchain_groq import ChatGroq
 from langchain.messages import SystemMessage
 from langfuse.langchain import CallbackHandler
 from langgraph.prebuilt import ToolNode, tools_condition
+from secureagent.agents.state import AgentState
 
 # Tools
-from tools.crm_api import get_health_status
+from secureagent.tools.crm_api import get_health_status
 
 from dotenv import load_dotenv
 

@@ -3,7 +3,7 @@ from datetime import datetime
 import uuid
 from langchain.tools import tool
 
-from schemas.api_models import (
+from secureagent.schemas.api_models import (
     ClientMetadata,
     ErisaPolicy,
     NoteResponse,

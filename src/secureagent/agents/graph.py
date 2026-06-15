@@ -1,9 +1,10 @@
 from langgraph.graph import StateGraph, START, END
 from langgraph.prebuilt import ToolNode, tools_condition
 from langchain.messages import HumanMessage
-from state import AgentState
 from typing import cast
-from nodes import llm_call, tool_node
+
+from secureagent.agents.state import AgentState
+from secureagent.agents.nodes import llm_call, tool_node
 
 from IPython.display import Image, display
 

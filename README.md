@@ -41,28 +41,44 @@ SecureAgent-ERISA is built around a decoupled architecture that separates data i
 
 
 ## 🚀 Getting Started
-1. Prerequisites
-    - Python 3.10 or higher
 
-    - Docker and Docker Compose
+### Prerequisites
 
-2. Installation & Environment Setup
-Clone the repository and configure your runtime keys:
+- [uv](https://docs.astral.sh/uv/) (Python package and project manager)
+- Python 3.12+ (see `.python-version`)
+- Docker and Docker Compose (optional, for Langfuse, ChromaDB, and other services)
+
+### Project layout
+
+```text
+SecureAgent/
+  pyproject.toml          # dependencies, packaging, and scripts
+  src/
+    secureagent/          # installable Python package
+      main.py             # FastAPI app
+      agents/             # LangGraph orchestrator
+      tools/              # CRM tools and API routes
+      schemas/            # Pydantic models
+    tests/
+```
+
+Dependencies and the `secureagent` package are defined in `pyproject.toml`. Running `uv sync` creates a local `.venv` and installs the project in editable mode — no manual `PYTHONPATH` or `requirements.txt` needed.
+
+### Installation
+
+Clone the repository, install dependencies, and configure environment variables:
 
 ```bash
 git clone https://github.com/AbeTavarez/SecureAgent-ERISA.git
-cd secureagent-erisa
+cd SecureAgent-ERISA
 
-### Setup virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows use `venv\Scripts\activate`
-pip install -r requirements.txt
+uv sync
 
-# Populate environment variables
 cp .env.example .env
 ```
 
-Ensure your .env contains valid configurations for your LLM provider and telemetry dashboards:
+Ensure your `.env` contains valid configurations for your LLM provider and telemetry dashboards:
+
 ```bash
 OPENAI_API_KEY=sk-...
 LANGFUSE_PUBLIC_KEY=pk-...
@@ -71,9 +87,32 @@ LANGFUSE_HOST="http://localhost:3000"
 VECTOR_DB_URL="http://localhost:8000"
 ```
 
-Boot up the FastAPI gateway interface:
+### Run the CRM API
+
+Start the FastAPI gateway using the project script entry point:
+
 ```bash
-uvicorn src.main:app --reload --port 8000
+uv run secureagent-api
+```
+
+Or run uvicorn directly through uv:
+
+```bash
+uv run uvicorn secureagent.main:app --reload --port 8000
+```
+
+The API is available at `http://127.0.0.1:8000/api/v1`.
+
+### Run the agent (CLI)
+
+```bash
+uv run python -m secureagent.agents.graph
+```
+
+### Run tests
+
+```bash
+uv run pytest
 ```
 
 ## 🛠️ Key Design Patterns
@@ -91,5 +130,5 @@ class AgentState(TypedDict):
 
 ## Resources and Links
 
-**Testing**
- - https://fastapi.tiangolo.com/tutorial/testing/
+- [uv project guide](https://docs.astral.sh/uv/guides/projects/)
+- [FastAPI testing](https://fastapi.tiangolo.com/tutorial/testing/)

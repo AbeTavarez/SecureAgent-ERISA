@@ -2308,7 +2308,7 @@ wheels = [
 [[package]]
 name = "secureagent"
 version = "0.1.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "chromadb" },
     { name = "fastapi" },
@@ -2320,6 +2320,7 @@ dependencies = [
     { name = "pydantic" },
     { name = "pytest" },
     { name = "python-dotenv" },
+    { name = "uvicorn" },
 ]
 
 [package.metadata]
@@ -2334,6 +2335,7 @@ requires-dist = [
     { name = "pydantic" },
     { name = "pytest", specifier = ">=9.0.3" },
     { name = "python-dotenv" },
+    { name = "uvicorn" },
 ]
 
 [[package]]
