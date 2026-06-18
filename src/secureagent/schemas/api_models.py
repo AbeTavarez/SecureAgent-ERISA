@@ -21,9 +21,12 @@ class ClientMetadata(BaseModel):
 class ClientNoteRequest(BaseModel):
     client_id: str = Field(..., description="Target client unique identifier")
     note_content: str = Field(..., description="The triage/compliance note to append")
+    tax_id: str = Field(..., description="The Tax ID of the client to add the note to")
     author: str = Field(default="SecureAgent-ERISA")
 
 class NoteResponse(BaseModel):
     status: str 
     timestamp: datetime
     note_id: str
+    note_content: str
+    author: str

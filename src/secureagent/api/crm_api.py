@@ -1,5 +1,9 @@
 from fastapi import APIRouter, status, HTTPException
-from secureagent.tools.crm_service import lookup_client_by_tax_id, append_note_to_client, ClientNotFoundError
+from secureagent.services.crm_service import (
+    lookup_client_by_tax_id,
+    append_note_to_client,
+    ClientNotFoundError,
+)
 from secureagent.schemas.api_models import (
     ClientMetadata,
     NoteResponse,
@@ -53,7 +57,9 @@ async def add_note_to_profile(payload: ClientNoteRequest):
     """
 
     try:
-        return append_note_to_client(payload.client_id, payload.note_content, payload.author)
+        return append_note_to_client(
+            payload.client_id, payload.note_content, payload.tax_id, payload.author
+        )
     except ClientNotFoundError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

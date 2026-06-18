@@ -4,6 +4,7 @@ from secureagent.schemas.api_models import (
     NoteResponse,
 )
 from datetime import datetime
+import uuid
 
 # Hardcoded in-memory state representing the enterprise database backend
 MOCK_CLIENTS_DB = {
@@ -39,16 +40,18 @@ def lookup_client_by_tax_id(tax_id: str) -> ClientMetadata:
     return client
 
 
-def append_note_to_client(client_id: str, note_content: str, author: str = "SecureAgent-ERISA") -> NoteResponse:
+def append_note_to_client(client_id: str, note_content: str, tax_id: str, author: str = "SecureAgent-ERISA") -> NoteResponse:
     """Append a note to a client's compliance history."""
-    db_client = MOCK_CLIENTS_DB.get(client_id)
-    if db_client is None:
-        raise ClientNotFoundError(client_id)
+    db_client = MOCK_CLIENTS_DB.get(tax_id)
+    if db_client is None or db_client.client_id != client_id:
+        raise ClientNotFoundError(f"Client with ID '{client_id}' and Tax ID '{tax_id}' not found in CRM database.")
     
-    db_client.compliance_notes.append(note_content)
+    formatted_note = f"[{datetime.now().isoformat()} | {author}]: {note_content}"
+    db_client.compliance_notes.append(formatted_note)
     return NoteResponse(
-        client_id=client_id,
-        note_content=note_content,
+        status="Success",
+        note_id=str(uuid.uuid4()),
+        note_content=formatted_note,
         author=author,
         timestamp=datetime.now().isoformat(),
-    )   
+    )

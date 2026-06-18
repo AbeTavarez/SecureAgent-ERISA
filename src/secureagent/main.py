@@ -1,7 +1,7 @@
 
 from fastapi import FastAPI
 
-from secureagent.tools.crm_api import router
+from secureagent.api.crm_api import router
 
 # ====== API ========
 app = FastAPI(title="Mock CRM API")

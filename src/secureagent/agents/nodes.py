@@ -6,7 +6,7 @@ from langchain.messages import AIMessage, ToolMessage
 from secureagent.agents.state import AgentState
 
 # Tools
-from secureagent.tools.crm_api import get_health_status
+from secureagent.tools.crm_tools import get_health_status, get_client_by_tax_id, add_note_to_profile
 
 from dotenv import load_dotenv
 
@@ -15,7 +15,7 @@ load_dotenv()
 langfuse_handler = CallbackHandler()
 
 # Model Tools
-tools = [get_health_status]
+tools = [get_health_status, get_client_by_tax_id, add_note_to_profile]
 tools_by_name = {tool.name: tool for tool in tools}
 
 # Model
@@ -23,7 +23,12 @@ model = ChatGroq(model="qwen/qwen3-32b", temperature=0)
 model_with_tools = model.bind_tools(tools)
 
 
-PROMPT = """You're a helpful assistance"""
+PROMPT = """You're an ERISA compliance agent that can look up client information and add notes to their profile.
+You can use the following tools to get information about the client and add notes to their profile:
+- get_health_status: Get the health status of the CRM API.
+- get_client_by_tax_id: Look up a client CRM profile by Tax ID (e.g. '95-1234567').
+- add_note_to_profile: Append a compliance note to a client's profile.
+"""
 
 
 def llm_call(state: AgentState):

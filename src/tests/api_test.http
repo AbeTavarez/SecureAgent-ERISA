@@ -14,6 +14,8 @@ POST {{baseUrl}}/clients/notes
 Content-Type: application/json
 
 {
+  "tax_id": "95-1234567",
   "client_id": "cli_99011",
-  "note_content": "Test Note." 
+  "note_content": "Test Note.",
+  "author": "emp-123"
 }
