@@ -1,38 +1,14 @@
 from fastapi import APIRouter, status, HTTPException
-from datetime import datetime
-import uuid
-from langchain.tools import tool
-
+from secureagent.tools.crm_service import lookup_client_by_tax_id, append_note_to_client, ClientNotFoundError
 from secureagent.schemas.api_models import (
     ClientMetadata,
-    ErisaPolicy,
     NoteResponse,
     ClientNoteRequest,
 )
 
 router = APIRouter()
 
-# Hardcoded in-memory state representing the enterprise database backend
-MOCK_CLIENTS_DB = {
-    "95-1234567": ClientMetadata(
-        client_id="cli_99011",
-        company_name="Contoso Retirement Solutions",
-        tax_id="95-1234567",
-        account_status="Active",
-        erisa_policies=[
-            ErisaPolicy(
-                policy_id="pol_401k_abc",
-                plan_type="401k",
-                compliance_status="Compliant",
-                last_review="2026-01-15",
-            )
-        ],
-        compliance_notes=["Initial onboarding compliance review completed."],
-    )
-}
 
-
-@tool
 @router.get(
     "/health", status_code=status.HTTP_200_OK, summary="Fetch API health status"
 )
@@ -55,16 +31,13 @@ async def get_client_by_tax_id(tax_id: str):
     existence and fetch active retirement plans.
     """
 
-    # Lookup client in mock db
-    print(tax_id)
-    client_profile = MOCK_CLIENTS_DB.get(tax_id)
-
-    if not client_profile:
+    try:
+        return lookup_client_by_tax_id(tax_id)
+    except ClientNotFoundError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Client with Tax ID '{tax_id}' not found in CRM database.",
         )
-    return client_profile
 
 
 @router.post(
@@ -79,25 +52,10 @@ async def add_note_to_profile(payload: ClientNoteRequest):
     regulatory determination back to the audit trail.
     """
 
-    # Get client by the id
-    target_client = None
-    for profile in MOCK_CLIENTS_DB.values():
-        if profile.client_id == payload.client_id:
-            target_client = profile
-            break
-
-    if not target_client:
+    try:
+        return append_note_to_client(payload.client_id, payload.note_content, payload.author)
+    except ClientNotFoundError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Client with ID '{payload.client_id}' does not exist.",
         )
-
-    # Append the structured note content to the profile
-    timestamp_str = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
-    formatted_note = f"[{timestamp_str} | {payload.author}]: {payload.note_content}"
-    target_client.compliance_notes.append(formatted_note)
-
-    # Return a clean confirmation contract back to the agent loop
-    return NoteResponse(
-        status="Success", timestamp=datetime.utcnow(), note_id=str(uuid.uuid4())
-    )
