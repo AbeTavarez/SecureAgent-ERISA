@@ -1,6 +1,7 @@
 from langgraph.graph import StateGraph, START, END
 from langchain.messages import HumanMessage
-from typing import cast
+from langgraph.checkpoint.memory import InMemorySaver
+import uuid
 
 from secureagent.agents.state import AgentState
 from secureagent.agents.nodes import llm_call, tool_node, should_continue
@@ -11,6 +12,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# Memory
+memory = InMemorySaver()
 
 # Build agent workflow
 agent_workflow = StateGraph(AgentState)
@@ -29,7 +32,7 @@ agent_workflow.add_edge("tool_node", "llm_call")
 
 
 # Compile the graph
-agent = agent_workflow.compile()
+agent = agent_workflow.compile(checkpointer=memory)
 
 
 # Visualize Graph
@@ -39,24 +42,10 @@ def get_graph_diagram():
     except Exception:
         print("Additional dependencies required.")
 
-#! Remove after creating CLI
-if __name__ == "__main__":
 
-    user_prompt = input("Enter prompt: ")
+def run_agent(prompt: str, thread_id: str | None = None) -> AgentState:
+    """Run the ERISA agent with the given prompt and memory."""
 
-    messages = [HumanMessage(content=user_prompt)]
+    config = {"configurable": {"thread_id": thread_id or str(uuid.uuid4())}}
 
-    initial_state = cast(
-        AgentState,
-        {
-            "messages": messages,
-            "retrieved_context": [],
-            "current_triage": None,
-            "metadata": {},
-        },
-    )
-
-    messages = agent.invoke(initial_state)
-
-    for message in messages["messages"]:
-        print(message)
+    return agent.invoke({"messages": [HumanMessage(content=prompt)]}, config=config)

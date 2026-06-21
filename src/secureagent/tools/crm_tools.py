@@ -1,4 +1,4 @@
-from langgraph.tools import tool
+from langchain.tools import tool
 from secureagent.services.crm_service import lookup_client_by_tax_id, ClientNotFoundError, append_note_to_client
 from secureagent.schemas.api_models import ClientMetadata, NoteResponse
 
