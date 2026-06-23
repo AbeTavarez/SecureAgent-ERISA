@@ -81,3 +81,27 @@ def triage_node(state: AgentState):
             "last_triage": decision.model_dump_json(),
         }
     }
+
+
+def route_after_triage(state: AgentState):
+    """Route the agent based upon the triage decision"""
+
+    triage = state["current_triage"]
+
+    # If the triage is None, escalate to a human
+    if triage is None:
+        return "human_escalation"
+
+    # If the confidence is low, escalate to a human
+    if triage.confidence < 0.6:
+        return "human_escalation"
+
+    routing = {
+        "CRM_LOOKUP": "crm_lookup",
+        "CRM_UPDATE": "crm_update",
+        "RAG_SEARCH": "rag_search",
+        "HUMAN_INTERVENTION": "human_escalation",
+        "FINAL_REPLY": "final_reply",
+    }
+
+    return routing.get(triage.next_action, "human_escalation")
