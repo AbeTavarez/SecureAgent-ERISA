@@ -3,10 +3,12 @@ from langchain.messages import SystemMessage
 from langfuse.langchain import CallbackHandler
 from langgraph.graph import END
 from langchain.messages import AIMessage, ToolMessage
-from secureagent.agents.state import AgentState
+from secureagent.agents.state import AgentState, TriageDecision
 
 # Tools
+from secureagent.prompts.agent_triage_classifier import TRIAGE_PROMPT
 from secureagent.tools.crm_tools import get_health_status, get_client_by_tax_id, add_note_to_profile
+from secureagent.prompts.agent_tool_calling import AGENT_TOOL_CALLING_PROMPT
 
 from dotenv import load_dotenv
 
@@ -23,21 +25,13 @@ model = ChatGroq(model="qwen/qwen3-32b", temperature=0)
 model_with_tools = model.bind_tools(tools)
 
 
-PROMPT = """You're an ERISA compliance agent that can look up client information and add notes to their profile.
-You can use the following tools to get information about the client and add notes to their profile:
-- get_health_status: Get the health status of the CRM API.
-- get_client_by_tax_id: Look up a client CRM profile by Tax ID (e.g. '95-1234567').
-- add_note_to_profile: Append a compliance note to a client's profile.
-"""
-
-
 def llm_call(state: AgentState):
     """LLM decides whether to call a tool or not"""
 
     return {
         "messages": [
             model_with_tools.invoke(
-                [SystemMessage(content=PROMPT)] + state["messages"],
+                [SystemMessage(content=AGENT_TOOL_CALLING_PROMPT)] + state["messages"],
                 config={"callbacks": [langfuse_handler]},
             )
         ],
@@ -69,3 +63,21 @@ def should_continue(state: AgentState):
 
     # Otherwise, we stop (reply to the user)
     return END
+
+
+def triage_node(state: AgentState):
+    """Classify the next action"""
+    triage_model = model.with_structured_output(TriageDecision)
+
+    decision = triage_model.invoke(
+        [SystemMessage(content=TRIAGE_PROMPT)] + state["messages"],
+        config={"callbacks": [langfuse_handler]},
+    )
+
+    return {
+        "current_triage": decision,
+        "metadata": {
+            **state.get("metadata", {}),
+            "last_triage": decision.model_dump_json(),
+        }
+    }
