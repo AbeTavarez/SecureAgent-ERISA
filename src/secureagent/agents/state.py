@@ -4,10 +4,12 @@ from pydantic import BaseModel, Field
 from typing import TypedDict, Annotated, List, Optional, Dict, Any
 from typing import Literal
 
+TriageAction = Literal["RAG_SEARCH", "CRM_LOOKUP" ,"CRM_UPDATE", "HUMAN_INTERVENTION", "FINAL_REPLY"]
+
 class TriageDecision(BaseModel):
     """Explicit structured prediction for the next step in execution."""
     
-    next_action: str = Literal["RAG_SEARCH", "CRM_UPDATE", "HUMAN_INTERVENTION", "FINAL_REPLY"]
+    next_action: TriageAction
     
     reasoning: str = Field(
         description="Internal thought process driving the routing decision."
@@ -23,6 +25,8 @@ class TriageDecision(BaseModel):
     client_id: str | None = None
 
     note_content: str | None = None
+
+    search_query: str | None = None
     
     
 class AgentState(TypedDict):
