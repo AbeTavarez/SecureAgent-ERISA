@@ -105,3 +105,27 @@ def route_after_triage(state: AgentState):
     }
 
     return routing.get(triage.next_action, "human_escalation")
+
+
+def crm_lookup_node(state: AgentState):
+    """Lookup the client in the CRM"""
+    triage = state["current_triage"]
+    tax_id = triage.tax_id if triage else None
+
+    if not tax_id:
+        return {
+            "messages": [AIMessage(content="I need a tax ID to look up the client.")]
+        }
+    
+    try:
+        result = get_client_by_tax_id({"tax_id": tax_id})
+    except Exception as e:
+        return {
+            "messages": [AIMessage(content=f"Error looking up the client: {e}")],
+            "retrieved_context": []
+        }
+    
+    return {
+        "messages": [AIMessage(content=f"Client found: {result}")],
+        "retrieved_context": [result]
+    }
