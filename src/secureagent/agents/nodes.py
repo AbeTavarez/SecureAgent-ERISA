@@ -9,7 +9,7 @@ from secureagent.agents.state import AgentState, TriageDecision
 from secureagent.prompts.agent_triage_classifier import TRIAGE_PROMPT
 from secureagent.tools.crm_tools import get_health_status, get_client_by_tax_id, add_note_to_profile
 from secureagent.prompts.agent_tool_calling import AGENT_TOOL_CALLING_PROMPT
-
+from secureagent.prompts.agent_final_reply import FINAL_REPLY_PROMPT
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -149,3 +149,40 @@ def crm_update_node(state: AgentState):
     return {
         "messages": [AIMessage(content=f"CRM update result: {result}")]
     }
+
+
+def rag_search_node(state: AgentState):
+    """Search the RAG database"""
+    triage = state["current_triage"]
+    query = (triage.search_query if triage else None) or "regulatory query"
+
+    # TODO: Implement RAG search
+    result = {
+        "source": "RAG Stub",
+        "content": "This is a stub for the RAG search."
+    }
+    
+    return {
+        "retrieved_context": [result],
+        "messages": [AIMessage(content=f"[RAG Stub would search regulations for {query}]")]
+    }
+
+
+def human_escalation_node(state: AgentState):
+    """Escalate to a human"""
+    triage = state["current_triage"]
+    reason = triage.reasoning if triage else None
+
+    return {
+        "messages": [AIMessage(content=f"I'm escalating this to a human specialist with the following reason: {reason}")]
+    }
+
+
+def final_reply_node(state: AgentState):
+    """Generate a final reply"""
+    reply = model.invoke(
+        [SystemMessage(content=FINAL_REPLY_PROMPT)] + state["messages"],
+        config={"callbacks": [langfuse_handler]},
+    )
+
+    return {"messages": [reply]}
