@@ -125,3 +125,27 @@ def crm_lookup_node(state: AgentState):
     return {
         "messages": [AIMessage(content=f"CRM lookup result: {result}")]
     }
+
+
+def crm_update_node(state: AgentState):
+    """Update the client in the CRM"""
+    
+    triage = state["current_triage"]
+    tax_id = triage.tax_id if triage else None
+    client_id = triage.client_id if triage else None
+    note_content = triage.note_content if triage else None
+    author = triage.author if triage else None
+
+    if not tax_id or not client_id or not note_content or not author:
+        return {
+            "messages": [AIMessage(content="I need a tax ID, note content, and author to update the client.")]
+        }
+    
+    try:
+        result = add_note_to_profile(client_id, note_content, tax_id, author)
+    except Exception as e:
+        result = str(e)
+    
+    return {
+        "messages": [AIMessage(content=f"CRM update result: {result}")]
+    }
