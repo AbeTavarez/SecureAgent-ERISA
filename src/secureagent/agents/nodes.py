@@ -120,12 +120,8 @@ def crm_lookup_node(state: AgentState):
     try:
         result = get_client_by_tax_id({"tax_id": tax_id})
     except Exception as e:
-        return {
-            "messages": [AIMessage(content=f"Error looking up the client: {e}")],
-            "retrieved_context": []
-        }
+        result = str(e)
     
     return {
-        "messages": [AIMessage(content=f"Client found: {result}")],
-        "retrieved_context": [result]
+        "messages": [AIMessage(content=f"CRM lookup result: {result}")]
     }
