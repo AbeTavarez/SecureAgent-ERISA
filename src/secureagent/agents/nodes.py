@@ -180,8 +180,30 @@ def human_escalation_node(state: AgentState):
 
 def final_reply_node(state: AgentState):
     """Generate a final reply"""
+
+    # Build the context for the final reply
+    context_parts = []
+
+    # Add the retrieved context if it exists
+    if state.get("retrieved_context"):
+        context_parts.append(f"Retrieved context: {state['retrieved_context']}")
+
+    # Add the triage information if it exists
+    if triage := state.get("current_triage"):
+        context_parts.append(
+            f"Action taken: {triage.next_action}\n"
+            f"Extracted: tax_id={triage.tax_id}, client_id={triage.client_id}, "
+            f"search_query={triage.search_query}"
+        )
+    # Join the context parts with a newline
+    context = "\n".join(context_parts) if context_parts else "None."
+    
+    # Format the final reply prompt with the context
+    prompt = FINAL_REPLY_PROMPT.format(context=context)
+    
+    # Invoke the model with the prompt and the messages
     reply = model.invoke(
-        [SystemMessage(content=FINAL_REPLY_PROMPT)] + state["messages"],
+        [SystemMessage(content=prompt)] + state["messages"],
         config={"callbacks": [langfuse_handler]},
     )
 

@@ -3,42 +3,42 @@
 An enterprise-grade, observable AI Agent Assist system designed to triage, research, and execute compliance workflows for retirement plan administration. This system orchestrates a multi-step execution loop over complex, dense IRS regulations and integrates safely with core corporate CRM infrastructure.
 
 ## 🏗️ Architectural Overview
+
 SecureAgent-ERISA is built around a decoupled architecture that separates data ingestion, stateful orchestration, and client delivery.
 
-                +---------------------------------------+
-                |        Enterprise UI / Client         |
-                +-------------------+-------------------+
-                                    | (Streaming API)
-                                    v
-                +-------------------+-------------------+
-                |          FastAPI Gateway              |
-                +-------------------+-------------------+
-                                    |
-                                    v
-                +-------------------+-------------------+
-                |       LangGraph Orchestrator          |
-                +---+---------------+---------------+---+
-                    |               |               |
-                    v               v               v
-    +----------+----------+ +--+---------------+--+ +----------+----------+
-    | Deterministic Triage| | Parent-Child RAG     | |  Mock CRM System   |
-    | (Structured Output) | | (ChromaDB/pgvector)  | |  (Salesforce API)  |
-    +---------------------+ +----------------------+ +---------------------+
-                                    ^
-                                    | (Out-of-band Ingestion)
-                        +----------+----------+
-                        | 2026 IRS Regulations|
-                        +---------------------+
+```
+                               +---------------------------------------+
+                               |        Enterprise UI / Client         |
+                               +-------------------+-------------------+
+                                                   | (Streaming API)
+                                                   v
+                               +-------------------+-------------------+
+                               |          FastAPI Gateway              |
+                               +-------------------+-------------------+
+                                                   |
+                                                   v
+                               +-------------------+-------------------+
+                               |       LangGraph Orchestrator          |
+                               +---+---------------+---------------+---+
+                                   |               |               |
+                                   v               v               v
+              +----------+----------+ +--+---------------+--+ +----------+----------+
+              | Deterministic Triage| | Parent-Child RAG     | |  Mock CRM System   |
+              | (Structured Output) | | (ChromaDB/pgvector)  | |  (Salesforce API)  |
+              +---------------------+ +----------------------+ +---------------------+
+                                                  ^
+                                                  | (Out-of-band Ingestion)
+                                       +----------+----------+
+                                       | 2026 IRS Regulations|
+                                       +---------------------+
+```
 
 ## Core Components
- 1. Hierarchical RAG Pipeline: Resolves accuracy challenges in dense financial regulations using a parent-child chunking approach. Smaller, semantic child chunks point to comprehensive parent structural blocks (e.g., full restriction tables), preserving absolute regulatory context.
 
- 2. Deterministic Triage Layer: Eliminates unpredictable agent behavior. An LLM maps inputs to strict Pydantic states, allowing a localized Python router to execute tools rather than delegating total loop freedom to the model.
-
- 3. Enterprise CRM Gateway: A safe mock API representing transactional CRM systems (e.g., Salesforce) to read client records and append verified compliance/audit trails.
-
- 4. Observability & Telemetry: Out-of-the-box integration with Langfuse to audit prompt chains, token consumption, intermediate agent thoughts, and tool execution latency.
-
+1. Hierarchical RAG Pipeline: Resolves accuracy challenges in dense financial regulations using a parent-child chunking approach. Smaller, semantic child chunks point to comprehensive parent structural blocks (e.g., full restriction tables), preserving absolute regulatory context.
+2. Deterministic Triage Layer: Eliminates unpredictable agent behavior. An LLM maps inputs to strict Pydantic states, allowing a localized Python router to execute tools rather than delegating total loop freedom to the model.
+3. Enterprise CRM Gateway: A safe mock API representing transactional CRM systems (e.g., Salesforce) to read client records and append verified compliance/audit trails.
+4. Observability & Telemetry: Out-of-the-box integration with Langfuse to audit prompt chains, token consumption, intermediate agent thoughts, and tool execution latency.
 
 ## 🚀 Getting Started
 
@@ -140,10 +140,12 @@ On startup, the CLI prints a **session thread ID**. All turns in that session sh
 
 **Interactive commands**
 
-| Command | Description |
-|---------|-------------|
-| `/help` | List available chat commands |
+
+| Command              | Description                                             |
+| -------------------- | ------------------------------------------------------- |
+| `/help`              | List available chat commands                            |
 | `/clear` or `/reset` | Start a new conversation (assigns a new session thread) |
+
 
 **Options**
 
@@ -194,8 +196,8 @@ class AgentState(TypedDict):
     metadata: Dict[str, Any]
 ```
 
-
 ## Resources and Links
 
 - [uv project guide](https://docs.astral.sh/uv/guides/projects/)
 - [FastAPI testing](https://fastapi.tiangolo.com/tutorial/testing/)
+
