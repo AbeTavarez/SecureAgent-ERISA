@@ -139,7 +139,7 @@ def crm_update_node(state: AgentState):
 
     if not tax_id or not client_id or not note_content:
         return {
-            "messages": [AIMessage(content="I need a tax ID, note and content to update the client.")]
+            "messages": [AIMessage(content="I need a tax ID, note, and content to update the client.")]
         }
     
     try:
