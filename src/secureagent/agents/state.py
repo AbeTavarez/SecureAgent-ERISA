@@ -24,6 +24,8 @@ class TriageDecision(BaseModel):
 
     client_id: str | None = None
 
+    author: str | None= None
+
     note_content: str | None = None
 
     search_query: str | None = None

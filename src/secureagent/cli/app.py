@@ -38,10 +38,16 @@ def chat(
     import ssl
     from secureagent.agents.graph import run_agent
     import uuid
+    import re
 
     if prompt:
         messages = run_agent(prompt, thread_id=thread_id or str(uuid.uuid4()))
-        typer.echo(f"SecureAgent: {messages['messages'][-1].content}")
+        
+        # Removes reasoning before priting 
+        content = messages["messages"][-1].content
+        content = re.sub(r"<think>.*?</think>\s*", "", content, flags=re.DOTALL)
+        typer.echo(f"SecureAgent: {content}")
+        
         if show_metadata:
             typer.echo(f"\nMetadata: {messages['metadata']}")
         return

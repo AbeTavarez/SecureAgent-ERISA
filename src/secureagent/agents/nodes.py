@@ -118,7 +118,7 @@ def crm_lookup_node(state: AgentState):
         }
     
     try:
-        result = get_client_by_tax_id({"tax_id": tax_id})
+        result = get_client_by_tax_id.invoke({"tax_id": tax_id})
     except Exception as e:
         result = str(e)
     
@@ -134,15 +134,21 @@ def crm_update_node(state: AgentState):
     tax_id = triage.tax_id if triage else None
     client_id = triage.client_id if triage else None
     note_content = triage.note_content if triage else None
-    author = triage.author if triage else None
+    author = (triage.author if triage else None) or "SecureAgent-ERISA"
 
-    if not tax_id or not client_id or not note_content or not author:
+
+    if not tax_id or not client_id or not note_content:
         return {
-            "messages": [AIMessage(content="I need a tax ID, note content, and author to update the client.")]
+            "messages": [AIMessage(content="I need a tax ID, note and content to update the client.")]
         }
     
     try:
-        result = add_note_to_profile(client_id, note_content, tax_id, author)
+        result = add_note_to_profile.invoke({
+            "client_id": client_id, 
+            "note_content": note_content, 
+            "tax_id": tax_id, 
+            "author": author
+        })
     except Exception as e:
         result = str(e)
     
